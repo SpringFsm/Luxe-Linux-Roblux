@@ -7,7 +7,7 @@
       <router-link to="/" class="menu-icon" title="Retour à l'accueil">⚐</router-link>
     </header>
 
-    <section class="jeu-details" v-if="jeu">
+    <section class="jeu-details" v-if="jeu && dispo !== null">
       <img :src="`/images/${jeu.thumbnail_url}`" alt="Image du jeu" class="thumbnail" />
       <div class="info">
         <h2>{{ jeu.nom_jeu }}</h2>
@@ -17,6 +17,7 @@
         <p><strong>Nombre de joueurs :</strong> {{ jeu.min_joueur }} - {{ jeu.max_joueur }}</p>
         <p><strong>Score moyen :</strong> {{ jeu.avg_score }} ⭐</p>
         <p><strong>Classement :</strong> {{ jeu.jeu_rank }}</p>
+        <p><strong>Disponibilité :</strong> {{ dispo ? 'Disponible' : 'Indisponible' }}</p>
       </div>
     </section>
 
@@ -55,6 +56,7 @@ export default {
     return {
       jeu: null,
       avis: [],
+      dispo: null
     };
   },
   async mounted() {
@@ -67,6 +69,12 @@ export default {
     // Avis utilisateurs (filtrés côté client pour ce jeu)
     const avisRes = await axios.get('/api/eval');
     this.avis = avisRes.data.rows.filter(a => a.id_jeu === parseInt(id));
+
+    const dispoRes = await axios.get(`/api/disponibilite/${id}`);
+    this.dispo = dispoRes.data.disponible;
+    console.log(dispo);
+
+
   }
 };
 </script>

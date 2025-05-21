@@ -119,8 +119,6 @@ export default {
 };
 </script>
 
-
-
 <style scoped>
 .menu-icon {
   position: absolute;
