@@ -8,7 +8,7 @@
     </header>
 
     <section class="jeu-details" v-if="jeu">
-      <img :src="jeu.thumbnail_url" alt="Image du jeu" />
+      <img :src="`/images/${jeu.thumbnail_url}`" alt="Image du jeu" class="thumbnail" />
       <div class="info">
         <h2>{{ jeu.nom_jeu }}</h2>
         <p>{{ jeu.description }}</p>
@@ -61,7 +61,7 @@ export default {
     const id = this.$route.params.id;
 
     // Détails du jeu
-    const jeuRes = await axios.get(`/api/jeux/${id}`);
+    const jeuRes = await axios.get(`/api/jeuxDetails/${id}`);
     this.jeu = jeuRes.data.rows[0];
 
     // Avis utilisateurs (filtrés côté client pour ce jeu)
@@ -161,5 +161,11 @@ export default {
 }
 .footer-col {
   margin-bottom: 20px;
+}
+.thumbnail {
+  max-width: 300px;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 10px; /* optionnel : angles arrondis */
 }
 </style>

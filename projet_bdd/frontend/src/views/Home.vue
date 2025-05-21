@@ -10,8 +10,10 @@
     <section class="tendances">
       <h3>Tendance du moment</h3>
       <div class="cards">
-        <div v-for="jeu in jeux" :key="jeu.id_jeu" class="card">
+        <div v-for="(jeu, index) in jeux" :key="jeu.id_jeu" class="card">
           <router-link :to="`/jeux/${jeu.id_jeu}`">
+            <div class="ranking">#{{ index + 1 }}</div>
+            <img :src="getImageUrl(jeu.id_jeu)" alt="Image du jeu" class="thumbnail" />
             <div class="card-content">
               <h4>{{ jeu.nom_jeu }}</h4>
               <span class="categorie">{{ jeu.categorie }}</span>
@@ -35,19 +37,40 @@
   </div>
 </template>
 
+
+
 <script>
 import axios from 'axios';
+
 export default {
   name: 'Home',
   data() {
-    return { jeux: [] };
+    return {
+      jeux: [],
+      jeuxDetails: []
+    };
   },
   async mounted() {
-    const res = await axios.get('/api/mieuxNotes');
-    this.jeux = res.data.rows;
+    const [mieuxNotesRes, jeuxDetailsRes] = await Promise.all([
+      axios.get('/api/mieuxNotes'),
+      axios.get('/api/jeuxDetails')
+    ]);
+
+    this.jeux = mieuxNotesRes.data.rows.slice(0, 5); // ⬅️ Ici on garde les 5 premiers seulement
+    this.jeuxDetails = jeuxDetailsRes.data.rows;
+  },
+
+  methods: {
+    getImageUrl(id_jeu) {
+      const detail = this.jeuxDetails.find(j => j.id_jeu === id_jeu);
+      return detail ? `/images/${detail.thumbnail_url}` : '/images/default.jpg';
+    }
   }
 };
 </script>
+
+
+
 <style scoped>
 .menu-icon {
   position: absolute;
@@ -134,4 +157,18 @@ export default {
   list-style: none;
   padding: 0;
 }
+.thumbnail {
+  max-width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+.ranking {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #ff7a00;
+  margin-bottom: 10px;
+}
+
 </style>

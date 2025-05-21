@@ -11,10 +11,10 @@
       <h3>Filtrer les jeux de société</h3>
       <div class="tags">
         <button
-            v-for="cat in uniqueCategories"
-            :key="cat"
-            :class="{ tag: true, selected: selectedTags.includes(cat) }"
-            @click="toggleTag(cat)"
+          v-for="cat in uniqueCategories"
+          :key="cat"
+          :class="{ tag: true, selected: selectedTags.includes(cat) }"
+          @click="toggleTag(cat)"
         >
           {{ cat }}
         </button>
@@ -29,6 +29,7 @@
       <div v-if="resultats.length" class="cards">
         <div v-for="jeu in resultats" :key="jeu.id_jeu" class="card">
           <router-link :to="`/jeux/${jeu.id_jeu}`">
+            <img :src="getImageUrl(jeu)" alt="Image du jeu" class="thumbnail" />
             <h4>{{ jeu.nom_jeu }}</h4>
             <span class="categorie">{{ jeu.categorie }}</span>
             <p>{{ jeu.description }}</p>
@@ -57,6 +58,7 @@
   </div>
 </template>
 
+
 <script>
 import axios from 'axios';
 
@@ -65,51 +67,58 @@ export default {
   data() {
     return {
       searchTerm: '',
-      categories: [],      // Contient tous les jeux avec leur catégories
+      categories: [],      // Jeux avec leurs catégories
+      jeuxDetails: [],     // Jeux avec leurs images
       selectedTags: [],
       resultats: []
     };
   },
   computed: {
     uniqueCategories() {
-      // Extraire toutes les catégories de tous les jeux, les découper, les nettoyer, et enlever les doublons
       const allCategories = this.categories.flatMap(c =>
-          c.categories?.split(',').map(cat => cat.trim()) || []
+        c.categories?.split(',').map(cat => cat.trim()) || []
       );
       return [...new Set(allCategories)].filter(Boolean);
     }
   },
   async mounted() {
-    const res = await axios.get('/api/categories');
-    this.categories = res.data.rows;
-    this.resultats = this.categories; // afficher tous les jeux par défaut
+    const [catRes, detailsRes] = await Promise.all([
+      axios.get('/api/categories'),
+      axios.get('/api/jeuxDetails')
+    ]);
+
+    this.categories = catRes.data.rows;
+    this.jeuxDetails = detailsRes.data.rows;
+    this.resultats = this.categories;
   },
   methods: {
     toggleTag(tag) {
       this.selectedTags.includes(tag)
-          ? this.selectedTags = this.selectedTags.filter(t => t !== tag)
-          : this.selectedTags.push(tag);
+        ? this.selectedTags = this.selectedTags.filter(t => t !== tag)
+        : this.selectedTags.push(tag);
     },
     resetTags() {
       this.selectedTags = [];
       this.confirmerRecherche();
     },
-    async confirmerRecherche() {
-      const res = await axios.get('/api/categories');
-      const all = res.data.rows;
-
-      this.resultats = all.filter(jeu => {
+    confirmerRecherche() {
+      this.resultats = this.categories.filter(jeu => {
         const categories = jeu.categories?.split(',').map(c => c.trim()) || [];
 
         return (
-            (!this.searchTerm || jeu.nom_jeu.toLowerCase().includes(this.searchTerm.toLowerCase())) &&
-            (this.selectedTags.length === 0 || this.selectedTags.some(tag => categories.includes(tag)))
+          (!this.searchTerm || jeu.nom_jeu.toLowerCase().includes(this.searchTerm.toLowerCase())) &&
+          (this.selectedTags.length === 0 || this.selectedTags.some(tag => categories.includes(tag)))
         );
       });
+    },
+    getImageUrl(jeu) {
+      const match = this.jeuxDetails.find(j => j.id_jeu === jeu.id_jeu);
+      return match?.thumbnail_url ? `/images/${match.thumbnail_url}` : '/images/placeholder.jpg';
     }
   }
 };
 </script>
+
 
 
 <style scoped>
@@ -236,4 +245,12 @@ export default {
   display: flex;
   gap: 15px;
 }
+.thumbnail {
+  max-width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
 </style>
