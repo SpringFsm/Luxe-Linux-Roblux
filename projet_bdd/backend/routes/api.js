@@ -4,6 +4,7 @@ import pool from '../db.js';
 
 const router = express.Router();
 
+
 // Get jeux
 router.get('/api/jeux', async (req,res) => {
 
@@ -130,6 +131,52 @@ router.get('/api/disponibilite/:id', async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
+
+
+// POST
+
+// Créer utilisateur
+// Créer utilisateur (avec async/await)
+router.post('/api/utilisateurs', async (req, res) => {
+  const { nom_utilisateur, email, mdp, role } = req.body;
+
+  const sql = `
+    INSERT INTO UTILISATEUR (nom_utilisateur, email, mdp, role)
+    VALUES (?, ?, ?, ?)
+  `;
+
+  try {
+    const [result] = await pool.execute(sql, [nom_utilisateur, email, mdp, role]);
+    res.status(201).json({ message: 'Utilisateur créé avec succès' });
+  } catch (err) {
+    console.error('Erreur lors de l\'insertion :', err);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+
+router.post('/api/utilisateurs/login', async (req, res) => {
+  const { email, mdp } = req.body;
+
+  const sql = `SELECT * FROM UTILISATEUR WHERE email = ? AND mdp = ? LIMIT 1`;
+
+  try {
+    const [results] = await pool.execute(sql, [email, mdp]);
+
+    if (results.length === 0) {
+      // Aucun utilisateur trouvé avec cet email/mdp
+      return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+    }
+
+    // Connexion réussie
+    res.status(200).json({ message: 'Connexion réussie', utilisateur: results[0] });
+  } catch (err) {
+    console.error('Erreur lors de la connexion :', err);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+
 
 
 export default router;
