@@ -4,6 +4,7 @@
       <h1 class="title">Luxe Linux Roblux</h1>
       <h2 class="subtitle">Ludothèque - Jeux de société</h2>
       <router-link to="/" class="menu-icon" title="Retour à l'accueil">⚐</router-link>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
       <input v-model="searchTerm" type="text" placeholder="🔍 Rechercher" class="search-bar" />
     </header>
 
@@ -40,21 +41,30 @@
     </section>
 
     <footer class="footer">
-      <div class="footer-col">
-        <h5>Notre Projet</h5>
-        <ul><li>Contact</li><li>Description du Projet</li><li>---</li></ul>
+    <div class="footer-col">
+      <h5>Notre Projet</h5>
+      <ul>
+        <li>Contact</li>
+        <li>Description du Projet</li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Suivez-nous</h5>
+      <div class="social-icons">
+        <a href="https://youtu.be/kPnsJlR2Xto"><i class="fab fa-instagram fa-2x"></i></a>
+        <a href="https://youtu.be/7C1g028A0DA"><i class="fab fa-twitter fa-2x"></i></a>
+        <a href="https://youtu.be/YclqZCjHuAc"><i class="fab fa-youtube fa-2x"></i></a>
+        <a href="https://youtu.be/IVEpoXSl0O8"><i class="fab fa-linkedin-in fa-2x"></i></a>
       </div>
-      <div class="footer-col">
-        <h5>Ressources</h5>
-        <ul><li>Blog</li><li>Support</li><li>---</li></ul>
-      </div>
-      <div class="footer-social">
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-        <a href="#"><i class="fab fa-youtube"></i></a>
-        <a href="#"><i class="fab fa-linkedin"></i></a>
-      </div>
-    </footer>
+    </div>
+    <div class="footer-col">
+      <h5>Ressources</h5>
+      <ul>
+        <li>Blog</li>
+        <li>Support</li>
+      </ul>
+    </div>
+  </footer>
   </div>
 </template>
 
