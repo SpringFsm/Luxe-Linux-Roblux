@@ -4,7 +4,7 @@ import JeuDetail from '../views/JeuDetail.vue';
 
 const routes = [
   { path: '/', component: Home },
-  { path: '/jeu/:id', component: JeuDetail }
+  { path: '/jeux/:id', component: JeuDetail }
 ];
 
 export default createRouter({
