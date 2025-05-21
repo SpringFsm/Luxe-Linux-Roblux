@@ -64,40 +64,52 @@ export default {
   data() {
     return {
       searchTerm: '',
-      categories: [],
+      categories: [],      // Contient tous les jeux avec leur catégories
       selectedTags: [],
       resultats: []
     };
   },
   computed: {
     uniqueCategories() {
-      return [...new Set(this.categories.map(c => c.categorie))].filter(Boolean);
+      // Extraire toutes les catégories de tous les jeux, les découper, les nettoyer, et enlever les doublons
+      const allCategories = this.categories.flatMap(c =>
+        c.categories?.split(',').map(cat => cat.trim()) || []
+      );
+      return [...new Set(allCategories)].filter(Boolean);
     }
   },
   async mounted() {
     const res = await axios.get('/api/categories');
     this.categories = res.data.rows;
+    this.resultats = this.categories; // afficher tous les jeux par défaut
   },
   methods: {
     toggleTag(tag) {
       this.selectedTags.includes(tag)
-          ? this.selectedTags = this.selectedTags.filter(t => t !== tag)
-          : this.selectedTags.push(tag);
+        ? this.selectedTags = this.selectedTags.filter(t => t !== tag)
+        : this.selectedTags.push(tag);
     },
     resetTags() {
       this.selectedTags = [];
+      this.confirmerRecherche();
     },
     async confirmerRecherche() {
-      const res = await axios.get('/api/jeux'); // fallback à tous les jeux
+      const res = await axios.get('/api/categories');
       const all = res.data.rows;
-      this.resultats = all.filter(jeu =>
+
+      this.resultats = all.filter(jeu => {
+        const categories = jeu.categories?.split(',').map(c => c.trim()) || [];
+
+        return (
           (!this.searchTerm || jeu.nom_jeu.toLowerCase().includes(this.searchTerm.toLowerCase())) &&
-          (this.selectedTags.length === 0 || this.selectedTags.includes(jeu.categorie))
-      );
+          (this.selectedTags.length === 0 || this.selectedTags.some(tag => categories.includes(tag)))
+        );
+      });
     }
   }
 };
 </script>
+
 
 <style scoped>
 body {
