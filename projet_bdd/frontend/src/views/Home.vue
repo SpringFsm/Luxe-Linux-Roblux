@@ -4,6 +4,7 @@
       <h1 class="title">Luxe Linux Roblux</h1>
       <h2 class="subtitle">Ludothèque - Jeux de société</h2>
       <router-link to="/recherche" class="search-button">Effectuer une recherche</router-link>
+      <router-link to="/" class="menu-icon" title="Retour à l'accueil">⚐</router-link>
     </header>
 
     <section class="tendances">
@@ -30,12 +31,6 @@
         <h5>Ressources</h5>
         <ul><li>Blog</li><li>Support</li><li>---</li></ul>
       </div>
-      <div class="footer-social">
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-        <a href="#"><i class="fab fa-youtube"></i></a>
-        <a href="#"><i class="fab fa-linkedin"></i></a>
-      </div>
     </footer>
   </div>
 </template>
@@ -53,10 +48,20 @@ export default {
   }
 };
 </script>
-
 <style scoped>
-body {
-  margin: 0;
+.menu-icon {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 1.8rem;
+  background: none;
+  border: none;
+  color: #333;
+  text-decoration: none;
+  z-index: 1000;
+}
+.menu-icon:hover {
+  color: #4a4aff;
 }
 
 .home {
@@ -128,10 +133,5 @@ body {
 .footer-col ul {
   list-style: none;
   padding: 0;
-}
-.footer-social {
-  display: flex;
-  gap: 15px;
-  font-size: 1.2rem;
 }
 </style>

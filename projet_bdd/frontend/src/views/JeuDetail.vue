@@ -1,9 +1,67 @@
 <template>
-  <div>
-    <h2>{{ jeu.nom }}</h2>
-    <p>{{ jeu.description }}</p>
-    <p>Âge minimum : {{ jeu.age_min }} ans</p>
-    <p>Durée moyenne : {{ jeu.duree }} minutes</p>
+  <div class="detail-page">
+    <!-- HEADER -->
+    <header class="header">
+      <h1 class="title">Luxe Linux Roblux</h1>
+      <h2 class="subtitle">Ludothèque - Jeux de société</h2>
+      <router-link to="/" class="menu-icon" title="Retour à l'accueil">⚐</router-link>
+    </header>
+
+    <section class="jeu-details" v-if="jeu">
+      <img :src="jeu.thumbnail_url" alt="Image du jeu" />
+      <div class="info">
+        <h2>{{ jeu.nom_jeu }}</h2>
+        <p>{{ jeu.description }}</p>
+        <p><strong>Âge minimum :</strong> {{ jeu.age_min }} ans</p>
+        <p><strong>Durée moyenne :</strong> {{ jeu.temps_avg }}</p>
+        <p><strong>Nombre de joueurs :</strong> {{ jeu.min_joueur }} - {{ jeu.max_joueur }}</p>
+        <p><strong>Score moyen :</strong> {{ jeu.avg_score }} ⭐</p>
+        <p><strong>Classement :</strong> {{ jeu.jeu_rank }}</p>
+      </div>
+    </section>
+
+    <!-- AVIS -->
+    <section class="avis-section">
+      <h3>Avis des utilisateurs</h3>
+      <div v-if="avis.length">
+        <div v-for="a in avis" :key="a.id_eval" class="avis">
+          <p><strong>{{ a.nom_utilisateur }}</strong> - Note : {{ a.note }}</p>
+          <p>{{ a.eval_description }}</p>
+        </div>
+      </div>
+      <p v-else>Aucun avis pour ce jeu.</p>
+    </section>
+
+    <!-- RECOMMANDATIONS -->
+    <section class="recommandations">
+      <h3>Jeux similaires</h3>
+      <div class="cards">
+        <div v-for="jeuSim in recommandations" :key="jeuSim.id_jeu" class="card">
+          <router-link :to="`/jeux/${jeuSim.id_jeu}`">
+            <img :src="jeuSim.thumbnail_url" />
+            <p>{{ jeuSim.nom }}</p>
+          </router-link>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="footer-col">
+        <h5>Notre Projet</h5>
+        <ul><li>Contact</li><li>Description du Projet</li><li>---</li></ul>
+      </div>
+      <div class="footer-col">
+        <h5>Ressources</h5>
+        <ul><li>Blog</li><li>Support</li><li>---</li></ul>
+      </div>
+      <div class="footer-social">
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+        <a href="#"><i class="fab fa-linkedin"></i></a>
+      </div>
+    </footer>
   </div>
 </template>
 
@@ -14,14 +72,131 @@ export default {
   name: 'JeuDetail',
   data() {
     return {
-      jeu: {}
+      jeu: null,
+      avis: [],
+      recommandations: []
     };
   },
-  mounted() {
+  async mounted() {
     const id = this.$route.params.id;
-    axios.get(`/api/jeux/${id}`).then((res) => {
-      this.jeu = res.data;
-    });
+
+    // Détails du jeu
+    const jeuRes = await axios.get(`/api/jeux/${id}`);
+    this.jeu = jeuRes.data.rows[0];
+
+    // Avis utilisateurs (filtrés côté client pour ce jeu)
+    const avisRes = await axios.get('/api/eval');
+    this.avis = avisRes.data.rows.filter(a => a.id_jeu === parseInt(id));
+
+    // Simule des jeux similaires
+    const recoRes = await axios.get('/api/mieuxNotes');
+    this.recommandations = recoRes.data.rows.filter(j => j.id_jeu !== parseInt(id)).slice(0, 3);
   }
 };
 </script>
+
+<style scoped>
+.menu-icon {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 1.8rem;
+  background: none;
+  border: none;
+  color: #333;
+  text-decoration: none;
+  z-index: 1000;
+}
+.menu-icon:hover {
+  color: #4a4aff;
+}
+
+.detail-page {
+  background-color: #b0e0ff;
+  font-family: 'Segoe UI', sans-serif;
+}
+.header {
+  background-color: #d4f1ff;
+  text-align: center;
+  padding: 40px;
+}
+.title {
+  font-size: 2.5rem;
+  margin: 0;
+}
+.subtitle {
+  font-size: 1.2rem;
+}
+
+.jeu-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  padding: 40px;
+  align-items: flex-start;
+  max-width: 1000px;
+  margin: auto;
+}
+.jeu-details img {
+  width: 250px;
+  height: auto;
+  border-radius: 10px;
+}
+.info {
+  flex: 1;
+}
+.info h2 {
+  margin-top: 0;
+}
+
+.avis-section {
+  background: white;
+  margin: 30px auto;
+  max-width: 800px;
+  padding: 30px;
+  border-radius: 15px;
+}
+.avis {
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+}
+
+.recommandations {
+  padding: 30px;
+  text-align: center;
+}
+.cards {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+.card {
+  width: 180px;
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+}
+.card img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.footer {
+  background-color: #8fd0ff;
+  display: flex;
+  justify-content: space-between;
+  padding: 30px;
+  flex-wrap: wrap;
+}
+.footer-col {
+  margin-bottom: 20px;
+}
+.footer-social {
+  display: flex;
+  gap: 15px;
+}
+</style>

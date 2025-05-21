@@ -3,6 +3,7 @@
     <header class="header">
       <h1 class="title">Luxe Linux Roblux</h1>
       <h2 class="subtitle">Ludothèque - Jeux de société</h2>
+      <router-link to="/" class="menu-icon" title="Retour à l'accueil">⚐</router-link>
       <input v-model="searchTerm" type="text" placeholder="🔍 Rechercher" class="search-bar" />
     </header>
 
@@ -15,7 +16,7 @@
             :class="{ tag: true, selected: selectedTags.includes(cat) }"
             @click="toggleTag(cat)"
         >
-          ✔ {{ cat }}
+          {{ cat }}
         </button>
       </div>
       <div class="filter-actions">
@@ -73,7 +74,7 @@ export default {
     uniqueCategories() {
       // Extraire toutes les catégories de tous les jeux, les découper, les nettoyer, et enlever les doublons
       const allCategories = this.categories.flatMap(c =>
-        c.categories?.split(',').map(cat => cat.trim()) || []
+          c.categories?.split(',').map(cat => cat.trim()) || []
       );
       return [...new Set(allCategories)].filter(Boolean);
     }
@@ -86,8 +87,8 @@ export default {
   methods: {
     toggleTag(tag) {
       this.selectedTags.includes(tag)
-        ? this.selectedTags = this.selectedTags.filter(t => t !== tag)
-        : this.selectedTags.push(tag);
+          ? this.selectedTags = this.selectedTags.filter(t => t !== tag)
+          : this.selectedTags.push(tag);
     },
     resetTags() {
       this.selectedTags = [];
@@ -101,8 +102,8 @@ export default {
         const categories = jeu.categories?.split(',').map(c => c.trim()) || [];
 
         return (
-          (!this.searchTerm || jeu.nom_jeu.toLowerCase().includes(this.searchTerm.toLowerCase())) &&
-          (this.selectedTags.length === 0 || this.selectedTags.some(tag => categories.includes(tag)))
+            (!this.searchTerm || jeu.nom_jeu.toLowerCase().includes(this.searchTerm.toLowerCase())) &&
+            (this.selectedTags.length === 0 || this.selectedTags.some(tag => categories.includes(tag)))
         );
       });
     }
@@ -112,9 +113,21 @@ export default {
 
 
 <style scoped>
-body {
-  margin: 0;
+.menu-icon {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 1.8rem;
+  background: none;
+  border: none;
+  color: #333;
+  text-decoration: none;
+  z-index: 1000;
 }
+.menu-icon:hover {
+  color: #4a4aff;
+}
+
 .recherche-page {
   background-color: #b0e0ff;
   font-family: 'Segoe UI', sans-serif;
@@ -155,13 +168,13 @@ body {
 }
 .tag {
   padding: 8px 15px;
-  border-radius: 20px;
+  border-radius: 8px;
   background: #ccc;
   color: white;
   cursor: pointer;
 }
 .tag.selected {
-  background-color: #4a4aff;
+  background-color: #8fd0ff;
 }
 .filter-actions {
   margin-top: 20px;
@@ -179,7 +192,7 @@ body {
   color: white;
 }
 .confirm {
-  background-color: #4a4aff;
+  background-color: #8fd0ff;
   color: white;
 }
 
@@ -205,7 +218,7 @@ body {
 }
 .categorie {
   font-weight: bold;
-  color: #4a4aff;
+  color: #8fd0ff;
   display: block;
   margin-bottom: 5px;
 }
