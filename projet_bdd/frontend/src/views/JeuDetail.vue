@@ -32,19 +32,6 @@
       <p v-else>Aucun avis pour ce jeu.</p>
     </section>
 
-    <!-- RECOMMANDATIONS -->
-    <section class="recommandations">
-      <h3>Jeux similaires</h3>
-      <div class="cards">
-        <div v-for="jeuSim in recommandations" :key="jeuSim.id_jeu" class="card">
-          <router-link :to="`/jeux/${jeuSim.id_jeu}`">
-            <img :src="jeuSim.thumbnail_url" />
-            <p>{{ jeuSim.nom }}</p>
-          </router-link>
-        </div>
-      </div>
-    </section>
-
     <!-- FOOTER -->
     <footer class="footer">
       <div class="footer-col">
@@ -54,12 +41,6 @@
       <div class="footer-col">
         <h5>Ressources</h5>
         <ul><li>Blog</li><li>Support</li><li>---</li></ul>
-      </div>
-      <div class="footer-social">
-        <a href="#"><i class="fab fa-twitter"></i></a>
-        <a href="#"><i class="fab fa-instagram"></i></a>
-        <a href="#"><i class="fab fa-youtube"></i></a>
-        <a href="#"><i class="fab fa-linkedin"></i></a>
       </div>
     </footer>
   </div>
@@ -74,7 +55,6 @@ export default {
     return {
       jeu: null,
       avis: [],
-      recommandations: []
     };
   },
   async mounted() {
@@ -87,10 +67,6 @@ export default {
     // Avis utilisateurs (filtrés côté client pour ce jeu)
     const avisRes = await axios.get('/api/eval');
     this.avis = avisRes.data.rows.filter(a => a.id_jeu === parseInt(id));
-
-    // Simule des jeux similaires
-    const recoRes = await axios.get('/api/mieuxNotes');
-    this.recommandations = recoRes.data.rows.filter(j => j.id_jeu !== parseInt(id)).slice(0, 3);
   }
 };
 </script>
@@ -162,15 +138,6 @@ export default {
   padding-bottom: 10px;
 }
 
-.recommandations {
-  padding: 30px;
-  text-align: center;
-}
-.cards {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-}
 .card {
   width: 180px;
   background: white;
@@ -194,9 +161,5 @@ export default {
 }
 .footer-col {
   margin-bottom: 20px;
-}
-.footer-social {
-  display: flex;
-  gap: 15px;
 }
 </style>
