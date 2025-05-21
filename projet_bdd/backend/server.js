@@ -1,7 +1,7 @@
 // backend/server.js
 import express from 'express';
 import cors from 'cors';
-import jeuxRoutes from './routes/jeux.js';
+import jeuxRoutes from './routes/api.js';
 
 const app = express();
 const PORT = 3000;
