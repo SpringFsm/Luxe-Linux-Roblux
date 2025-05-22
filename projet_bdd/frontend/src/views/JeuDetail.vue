@@ -115,7 +115,7 @@ export default {
 
 .avis-section {
   background: white;
-  margin: 30px auto;
+  margin: auto;
   max-width: 800px;
   padding: 30px;
   border-radius: 15px;
