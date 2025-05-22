@@ -1,6 +1,8 @@
 <template>
   <div class="recherche-page">
-    
+  <header class="header">
+    <input v-model="searchTerm" type="text" placeholder="🔍 Rechercher" class="search-bar" />
+  </header>
     <section class="filters-section">
       <h3>Filtrer les jeux de société</h3>
       <div class="tags">
