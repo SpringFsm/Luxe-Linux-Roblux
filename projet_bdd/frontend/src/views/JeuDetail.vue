@@ -74,7 +74,7 @@ export default {
           id_utilisateur: utilisateur.id_utilisateur
         });
 
-        alert(`Le jeu "${this.jeu.nom_jeu}" a été loué avec succès !`);
+        alert(`Le jeu "${this.jeu.nom}" a été loué avec succès !`);
         this.dispo = false; // mise à jour de la disponibilité
 
       } catch (err) {
