@@ -124,6 +124,9 @@ export default {
   border-radius: 10px;
   text-decoration: none;
 }
+.search-button:hover {
+  background-color : #3a3aff;
+}
 .footer {
   background-color: #8fd0ff;
   display: flex;

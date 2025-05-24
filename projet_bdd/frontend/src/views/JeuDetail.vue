@@ -34,12 +34,12 @@
       <div class="form-avis" v-if="formVisible">
         <h4>Ajouter votre avis</h4>
         <label for="note">Note :</label>
-        <input type="number" id="note" v-model="newAvis.note" min="0" max="5" step="0.5" />
+        <input type="number" id="note" v-model="newAvis.note" min="0" max="10" step="0.5" />
 
         <label for="desc">Description :</label>
         <textarea id="desc" v-model="newAvis.eval_description" rows="3" maxlength="50"></textarea>
 
-        <button @click="ajouterAvis">Envoyer</button>
+        <button @click="ajouterAvis" class="btn-envoyer">Envoyer</button>
       </div>
 
       <button @click="formVisible = !formVisible" class="btn-ajouter-avis">
@@ -134,6 +134,11 @@ export default {
         // Recharge les avis après insertion
         const avisRes = await axios.get('/api/eval');
         this.avis = avisRes.data.rows.filter(a => a.id_jeu === this.jeu.id_jeu);
+
+        //Recharger avg_score
+        const jeuRes = await axios.get(`/api/jeuxDetails/${this.jeu.id_jeu}`);
+        this.jeu = jeuRes.data.rows[0];
+      
 
       } catch (err) {
         console.error("Erreur lors de l'ajout d'avis :", err);
@@ -287,6 +292,19 @@ export default {
 }
 .btn-ajouter-avis:hover {
   background-color: #388e3c;
+}
+.btn-envoyer {
+  background-color: #4a90e2;
+  color: white;
+  padding: 7px 20px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.btn-envoyer:hover {
+  background-color: #357ABD;
 }
 
 </style>

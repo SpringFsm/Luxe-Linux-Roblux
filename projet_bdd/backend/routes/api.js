@@ -78,7 +78,10 @@ router.get('/api/eval', async (req,res) =>{
 
 // Get jeux mieux notés vue_jeux_mieux_notes
 router.get('/api/mieuxNotes', async (req, res) =>{
-  let querry = 'SELECT * FROM vue_jeux_mieux_notes';
+  let querry = `
+    SELECT * FROM vue_jeux_mieux_notes
+    ORDER BY avg_score DESC;
+    `;
 
   try {
     const [rows] = await pool.execute(querry);
