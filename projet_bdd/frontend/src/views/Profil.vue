@@ -73,6 +73,10 @@ export default {
             console.error('Erreur lors du retour du jeu :', err);
             alert("Impossible de retourner le jeu.");
         }
+    },
+    deconnexion() {
+      localStorage.removeItem('utilisateur');
+      this.$router.push('/');
     }
   }
 };
