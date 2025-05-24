@@ -15,6 +15,10 @@
       </div>
     </section>
 
+    <section class="bouton-louer" v-if="dispo">
+      <button @click="louerJeu" class="btn-louer">LOUER</button>
+    </section>
+
     <!-- AVIS -->
     <section class="avis-section">
       <h3>Avis des utilisateurs</h3>
@@ -55,6 +59,29 @@ export default {
 
     const dispoRes = await axios.get(`/api/disponibilite/${id}`);
     this.dispo = dispoRes.data.disponible;
+  },
+  methods: {
+    async louerJeu() {
+      try {
+        const utilisateur = JSON.parse(localStorage.getItem('utilisateur'));
+        if (!utilisateur || !utilisateur.id_utilisateur) {
+          alert("Vous devez être connecté pour louer un jeu.");
+          return;
+        }
+
+        await axios.post('/api/louer', {
+          id_jeu: this.jeu.id_jeu,
+          id_utilisateur: utilisateur.id_utilisateur
+        });
+
+        alert(`Le jeu "${this.jeu.nom_jeu}" a été loué avec succès !`);
+        this.dispo = false; // mise à jour de la disponibilité
+
+      } catch (err) {
+        console.error('Erreur lors de la location :', err);
+        alert("Impossible de louer ce jeu. Il est peut-être déjà loué.");
+      }
+    }
   }
 };
 </script>
@@ -96,7 +123,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   gap: 30px;
-  padding: 40px;
+  padding: 30px;
   align-items: flex-start;
   max-width: 1000px;
   margin: auto;
@@ -156,4 +183,24 @@ export default {
   object-fit: cover;
   border-radius: 10px; /* optionnel : angles arrondis */
 }
+.bouton-louer {
+  text-align: center;
+  margin: 15px 0;
+}
+
+.btn-louer {
+  background-color: #4a90e2;
+  color: white;
+  padding: 10px 30px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-louer:hover {
+  background-color: #357ABD;
+}
+
 </style>

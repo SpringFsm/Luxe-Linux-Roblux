@@ -1,8 +1,16 @@
 <template>
   <header class="header">
-    <router-link to="/login" class="login-button" title="Connexion / Inscription">
+    <!-- Si l'utilisateur est connecté, bouton Profil -->
+    <router-link v-if="utilisateur" to="/profil" class="login-button" title="Profil">
+      <i class="fas fa-user-circle"></i> Profil
+    </router-link>
+
+    <!-- Sinon, bouton Connexion -->
+    <router-link v-else to="/login" class="login-button" title="Connexion / Inscription">
       <i class="fas fa-user"></i> Se connecter
     </router-link>
+
+
     <h1 class="title">Luxe Linux Roblux</h1>
     <h2 class="subtitle">Ludothèque - Jeux de société</h2>
     <router-link to="/recherche" class="search-button">Effectuer une recherche</router-link>
@@ -44,9 +52,36 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  data() {
+    return {
+      utilisateur: null
+    };
+  },
+  created() {
+    this.chargerUtilisateur();
+  },
+  watch: {
+    // Si le composant est toujours actif mais l'utilisateur change ailleurs
+    '$route'() {
+      this.chargerUtilisateur();
+    }
+  },
+  methods: {
+    chargerUtilisateur() {
+      const utilisateurLocal = localStorage.getItem('utilisateur');
+      this.utilisateur = utilisateurLocal ? JSON.parse(utilisateurLocal) : null;
+    },
+    deconnexion() {
+      localStorage.removeItem('utilisateur');
+      this.chargerUtilisateur();
+      this.$router.push('/');
+    }
+  }
 }
 </script>
+
+
 
 <style scoped>
 .menu-icon {

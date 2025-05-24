@@ -4,7 +4,6 @@ import pool from '../db.js';
 
 const router = express.Router();
 
-
 // Get jeux
 router.get('/api/jeux', async (req,res) => {
 
@@ -132,11 +131,57 @@ router.get('/api/disponibilite/:id', async (req, res) => {
   }
 });
 
+// Get jeux loués par un utilisateur
+router.get('/api/louer/:id_utilisateur', async (req, res) => {
+  const { id_utilisateur } = req.params;
 
-// POST
+  const sql = `
+    SELECT L.id_jeu, L.statut, J.nom AS nom, J.thumbnail_url
+    FROM LOUER L
+    JOIN JEUX J ON L.id_jeu = J.id_jeu
+    WHERE L.id_utilisateur = ? AND L.statut = 'en cours';
+  `;
+
+  try {
+    const [rows] = await pool.execute(sql, [id_utilisateur]);
+    res.json({ rows });
+  } catch (err) {
+    console.error('Erreur lors de la récupération des jeux loués :', err);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+//Louer un jeu, procédure LouerJeu
+router.post('/api/louer', async (req, res) => {
+  const { id_jeu, id_utilisateur } = req.body;
+
+  try {
+    await pool.query('CALL LouerJeu(?, ?)', [id_jeu, id_utilisateur]);
+    res.status(201).json({ message: 'Jeu loué avec succès' });
+  } catch (err) {
+    console.error('Erreur lors de la location :', err);
+    res.status(500).json({ error: 'Erreur serveur ou doublon de location' });
+  }
+});
+
+// Retourner un jeu, procédure RetournerJeu
+router.put('/api/louer/', async (req, res) => {
+  const { id_jeu, id_utilisateur } = req.body;
+
+  try {
+    await pool.query('CALL RetournerJeu(?, ?)', [id_utilisateur, id_jeu]);
+    res.status(200).json({ message: 'Jeu retourné avec succès' });
+  } catch (err) {
+    console.error('Erreur lors du retour du jeu :', err);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+
+export default router;
+
 
 // Créer utilisateur
-// Créer utilisateur (avec async/await)
 router.post('/api/utilisateurs', async (req, res) => {
   const { nom_utilisateur, email, mdp, role } = req.body;
 
@@ -175,8 +220,3 @@ router.post('/api/utilisateurs/login', async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
-
-
-
-
-export default router;

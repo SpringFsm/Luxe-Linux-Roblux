@@ -56,19 +56,23 @@ export default {
     async submitLogin() {
       try {
         const response = await axios.post('/api/utilisateurs/login', this.loginForm);
+
+        localStorage.setItem('utilisateur', JSON.stringify(response.data.utilisateur));
+
         alert('Connexion réussie !');
-        // redirection ou autre logique ici
+
+        // Redirection vers la page d'accueil ou tableau de bord
         this.$router.push('/');
       } catch (err) {
         console.error(err);
-        alert('Erreur lors de la connexion');
+        alert('Email ou mot de passe incorrect');
       }
     },
     async submitRegister() {
       try {
         await axios.post('/api/utilisateurs', this.registerForm);
         alert('Compte créé avec succès !');
-        this.$router.push('/');
+        this.mode = 'login'; // On revient au formulaire de connexion
       } catch (err) {
         console.error(err);
         alert('Erreur lors de la création du compte');
