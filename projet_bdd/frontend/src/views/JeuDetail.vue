@@ -29,6 +29,22 @@
         </div>
       </div>
       <p v-else>Aucun avis pour ce jeu.</p>
+
+      <!-- Formulaire d'ajout d'avis -->
+      <div class="form-avis" v-if="formVisible">
+        <h4>Ajouter votre avis</h4>
+        <label for="note">Note :</label>
+        <input type="number" id="note" v-model="newAvis.note" min="0" max="5" step="0.5" />
+
+        <label for="desc">Description :</label>
+        <textarea id="desc" v-model="newAvis.eval_description" rows="3" maxlength="50"></textarea>
+
+        <button @click="ajouterAvis">Envoyer</button>
+      </div>
+
+      <button @click="formVisible = !formVisible" class="btn-ajouter-avis">
+        {{ formVisible ? 'Annuler' : 'Ajouter un avis' }}
+      </button>
     </section>
 
   </div>
@@ -43,8 +59,13 @@ export default {
     return {
       jeu: null,
       avis: [],
-      dispo: null
-    };
+      dispo: null,
+      formVisible: false,
+      newAvis: {
+        note: '',
+        eval_description: ''
+      }
+    }
   },
   async mounted() {
     const id = this.$route.params.id;
@@ -80,6 +101,43 @@ export default {
       } catch (err) {
         console.error('Erreur lors de la location :', err);
         alert("Impossible de louer ce jeu. Il est peut-être déjà loué.");
+      }
+    },
+    async ajouterAvis() {
+      try {
+        const utilisateur = JSON.parse(localStorage.getItem('utilisateur'));
+        if (!utilisateur || !utilisateur.id_utilisateur) {
+          alert("Vous devez être connecté pour laisser un avis.");
+          return;
+        }
+
+        if (!this.newAvis.note || this.newAvis.note < 0 || this.newAvis.note > 10) {
+          alert("Note invalide. Elle doit être entre 0 et 10.");
+          return;
+        }
+
+        const id_eval = Math.floor(Math.random() * 1000000); // remplace par un générateur côté backend si besoin
+
+        await axios.post('/api/evaluer', {
+          id_jeu: this.jeu.id_jeu,
+          id_utilisateur: utilisateur.id_utilisateur,
+          id_eval,
+          note: this.newAvis.note,
+          eval_description: this.newAvis.eval_description
+        });
+
+        alert("Merci pour votre avis !");
+        this.formVisible = false;
+        this.newAvis.note = '';
+        this.newAvis.eval_description = '';
+
+        // Recharge les avis après insertion
+        const avisRes = await axios.get('/api/eval');
+        this.avis = avisRes.data.rows.filter(a => a.id_jeu === this.jeu.id_jeu);
+
+      } catch (err) {
+        console.error("Erreur lors de l'ajout d'avis :", err);
+        alert("Impossible d'ajouter l'avis.");
       }
     }
   }
@@ -201,6 +259,34 @@ export default {
 
 .btn-louer:hover {
   background-color: #357ABD;
+}
+.form-avis {
+  background: #f8f8f8;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 15px;
+}
+.form-avis label {
+  display: block;
+  margin-top: 10px;
+}
+.form-avis input,
+.form-avis textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+}
+.btn-ajouter-avis {
+  margin-top: 15px;
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.btn-ajouter-avis:hover {
+  background-color: #388e3c;
 }
 
 </style>

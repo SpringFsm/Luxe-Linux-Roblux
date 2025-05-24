@@ -76,20 +76,6 @@ router.get('/api/eval', async (req,res) =>{
   }
 })
 
-// Get souhaits utilisateurs
-router.get('/api/souhaits', async (req, res) =>{
-  let querry = 'SELECT * FROM vue_souhaits_utilisateurs';
-
-  try{
-    const [rows] = await pool.execute(querry);
-    res.json({rows :rows});
-    
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Erreur serveur' });
-  }
-})
-
 // Get jeux mieux notés vue_jeux_mieux_notes
 router.get('/api/mieuxNotes', async (req, res) =>{
   let querry = 'SELECT * FROM vue_jeux_mieux_notes';
@@ -177,10 +163,6 @@ router.put('/api/louer/', async (req, res) => {
   }
 });
 
-
-export default router;
-
-
 // Créer utilisateur
 router.post('/api/utilisateurs', async (req, res) => {
   const { nom_utilisateur, email, mdp, role } = req.body;
@@ -198,6 +180,39 @@ router.post('/api/utilisateurs', async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
+
+router.post('/api/evaluer', async (req, res) => {
+  const { id_jeu, id_utilisateur, id_eval, note, eval_description } = req.body;
+
+  // Vérifie que tous les champs nécessaires sont présents
+  if (!id_jeu || !id_utilisateur || !id_eval || !note) {
+    return res.status(400).json({ error: 'Champs manquants' });
+  }
+
+  try {
+    const eval_date = new Date().toISOString().slice(0, 10); // date du jour au format YYYY-MM-DD
+
+    const query = `
+      INSERT INTO EVALUER (id_jeu, id_utilisateur, id_eval, note, eval_description, eval_date)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `;
+
+    await pool.query(query, [id_jeu, id_utilisateur, id_eval, note, eval_description, eval_date]);
+
+    res.status(201).json({ message: 'Évaluation ajoutée avec succès' });
+  } catch (err) {
+    console.error('Erreur lors de l\'insertion de l\'évaluation :', err);
+    if (err.code === 'ER_DUP_ENTRY') {
+      res.status(409).json({ error: 'Évaluation déjà existante pour cet utilisateur et ce jeu' });
+    } else {
+      res.status(500).json({ error: 'Erreur serveur' });
+    }
+  }
+});
+
+
+export default router;
+
 
 
 router.post('/api/utilisateurs/login', async (req, res) => {
